@@ -1,0 +1,354 @@
+:root {
+    --primary-color: #d4c4b0;
+    --secondary-color: #a8956b;
+    --accent-color: #3a2f25;
+    --background-light: #f8f3ec;
+    --background-dark: #1a1a1a;
+    --text-color: #3a2f25;
+    --shadow-color: rgba(58, 47, 37, 0.25);
+    --card-background: #e6d7b8;
+    --marble-highlight: rgba(255, 255, 255, 0.3);
+    --marble-shadow: rgba(0, 0, 0, 0.15);
+    --marble-gradient: linear-gradient(145deg, #e6d7b8 0%, #d1c1a0 50%, #f1e4c3 100%);
+    --marble-border: #b8a482;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--background-light);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Shift content only when hacker panel is open */
+body.hacker-open {
+    padding-left: 320px;
+}
+
+.game-container {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+#gameCanvas {
+    position: relative;
+    background: var(--marble-gradient);
+    border-radius: clamp(6px, 1.5vw, 10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 4px rgba(255, 255, 255, 0.3);
+    max-width: 100%;
+    max-height: calc(100% - 100px);
+}
+
+#gameCanvas::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    background: linear-gradient(145deg, #cab394 0%, #a8956b 50%, #d1c1a0 100%);
+    border-radius: clamp(10px, 2vw, 14px);
+    z-index: -1;
+    box-shadow: 0 0 0 2px var(--marble-border), 0 0 0 4px var(--secondary-color),
+        0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.score-container {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    margin-bottom: 1rem;
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+button {
+    position: relative;
+    background: var(--primary-color);
+    border: 3px solid var(--secondary-color);
+    border-radius: 12px;
+    padding: 0.8rem 1.6rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 6px 0 #8b7a54, 0 8px 15px var(--shadow-color);
+    transform: translateY(0);
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    right: 4px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 8px 8px 0 0;
+    pointer-events: none;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background: #e8ddd0;
+    box-shadow: 0 8px 0 #8b7a54, 0 10px 20px var(--shadow-color);
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #8b7a54, 0 4px 8px var(--shadow-color);
+}
+
+.upgrades-panel {
+    position: fixed;
+    right: -320px;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--marble-gradient);
+    padding: 2rem;
+    transition: right 0.3s ease;
+    box-shadow: -4px 0 24px var(--shadow-color);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.upgrades-panel.visible {
+    right: 0;
+}
+
+/* Hacker panel on the left */
+.hacker-panel {
+    position: fixed;
+    left: -320px;
+    top: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--marble-gradient);
+    padding: 2rem 1.5rem;
+    transition: left 0.3s ease;
+    box-shadow: 4px 0 24px var(--shadow-color);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.hacker-panel.visible {
+    left: 0;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hacker-panel .upgrade-item h3 { margin: 0; }
+.hacker-panel .upgrade-description { margin: 0.5rem 0 0.75rem; }
+
+/* Aimbot visuals: we draw red squares via canvas strokes; no CSS needed for that */
+
+.coins {
+    position: relative;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border-radius: clamp(6px, 1.5vw, 10px);
+    background: var(--marble-gradient);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 4px rgba(255, 255, 255, 0.3);
+}
+
+.upgrade-item {
+    position: relative;
+    background: var(--marble-gradient);
+    padding: 1.5rem;
+    border-radius: clamp(6px, 1.5vw, 10px);
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 4px rgba(255, 255, 255, 0.3);
+}
+
+
+.upgrade-item::before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(145deg, #cab394 0%, #a8956b 50%, #d1c1a0 100%);
+    border-radius: clamp(8px, 1.8vw, 12px);
+    z-index: -1;
+    box-shadow: 0 0 0 2px var(--marble-border), 0 0 0 4px var(--secondary-color),
+        0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.upgrade-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.upgrade-progress {
+    flex-grow: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    margin-left: 1rem;
+    overflow: hidden;
+}
+
+.upgrade-progress-bar {
+    height: 100%;
+    background: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.upgrade-description {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.skin-previews {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.paddle-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.paddle-preview:hover {
+    background: #f5f5f5;
+}
+
+.paddle-preview.active {
+    background: #f0f0f0;
+}
+
+.preview-paddle {
+    width: 10px;
+    height: 60px;
+    border-radius: 4px;
+}
+
+.preview-paddle.normal {
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+}
+
+.preview-paddle.crystal {
+    background: linear-gradient(to right, #88c0d0, #5e81ac);
+}
+
+.preview-paddle.gold {
+    background: linear-gradient(to right, #ffd700, #ffa500);
+}
+
+.pause-indicator {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    display: none;
+    z-index: 2000;
+}
+
+.pause-indicator.visible {
+    display: flex;
+}
+
+@media (max-width: 768px) {
+    .game-container {
+    padding: 0.5rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .score-container {
+        font-size: 2rem;
+        gap: 2rem;
+    }
+    
+    .upgrades-panel {
+        width: 100%;
+        right: -100%;
+    }
+    .hacker-panel {
+        width: 80%;
+        left: -80%;
+    }
+    body.hacker-open {
+        padding-left: 0; /* overlay on small screens */
+    }
+}
+
+/* Dark theme improvements */
+body.dark-mode {
+    --background-light: #0f1115;
+    --text-color: #e6e6e6;
+    --primary-color: #3a3f4b;
+    --secondary-color: #6b86a8;
+    --accent-color: #e8e1d9;
+    --card-background: #1a1f27;
+    --marble-gradient: linear-gradient(145deg, #161b22 0%, #0f141a 50%, #1e2430 100%);
+    --marble-border: #2b3542;
+}
+
+body.dark-mode #gameCanvas::before {
+    background: linear-gradient(145deg, #2b3542 0%, #6b86a8 50%, #1e2430 100%);
+}
+
+body.dark-mode .score-container { color: #e8e1d9; }
+body.dark-mode .upgrade-item::before { box-shadow: 0 0 0 2px #2b3542, 0 0 0 4px #6b86a8, 0 8px 32px rgba(0,0,0,0.5); }
+body.dark-mode button { background: #3a3f4b; border-color: #6b86a8; color: #e8e1d9; box-shadow: 0 6px 0 #324152, 0 8px 15px rgba(0,0,0,0.4); }
+body.dark-mode button:hover { background: #4a5262; box-shadow: 0 8px 0 #324152, 0 12px 22px rgba(0,0,0,0.45); }
+body.dark-mode button:active { box-shadow: 0 2px 0 #324152, 0 6px 10px rgba(0,0,0,0.5); }

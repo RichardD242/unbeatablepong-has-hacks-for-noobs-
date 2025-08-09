@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Unbeatable Pong</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="score-container">
+            <div id="playerScore" class="score">0</div>
+            <div id="aiScore" class="score">0</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="controls">
+            <button id="startButton">Start Game</button>
+            <button id="upgradesButton">Upgrades</button>
+            <button id="hackerButton">Hack Tools</button>
+            <button id="toggleTheme">Toggle Theme</button>
+        </div>
+    </div>
+    
+    <div id="upgradesPanel" class="upgrades-panel">
+        <div class="coins">
+            <span>Coins: </span>
+            <span id="coinCount">0</span>
+        </div>
+        
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Platform Size</h3>
+                <div class="upgrade-progress">
+                    <div class="upgrade-progress-bar"></div>
+                </div>
+            </div>
+            <p class="upgrade-description">Increases paddle size</p>
+            <button id="upgradePlatformSize">Upgrade (100 coins)</button>
+        </div>
+        
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Multi-Ball</h3>
+                <div class="upgrade-progress">
+                    <div class="upgrade-progress-bar"></div>
+                </div>
+            </div>
+            <p class="upgrade-description">Chance to spawn 2 balls: 0%</p>
+            <button id="upgradeMultiBall">Upgrade (200 coins)</button>
+            <label class="toggle-row" style="margin-top: 0.5rem;">
+                <input type="checkbox" id="toggleMultiBallEnabled" checked />
+                <span>Enable Multi-Ball</span>
+            </label>
+        </div>
+
+        
+        
+        <div class="upgrade-item">
+            <h3>Paddle Skin</h3>
+            <div class="skin-previews">
+                <div class="paddle-preview" data-skin="normal">
+                    <div class="preview-paddle normal"></div>
+                    <span>Normal</span>
+                </div>
+                <div class="paddle-preview" data-skin="crystal">
+                    <div class="preview-paddle crystal"></div>
+                    <span>Crystal</span>
+                </div>
+                <div class="paddle-preview" data-skin="gold">
+                    <div class="preview-paddle gold"></div>
+                    <span>Gold</span>
+                </div>
+            </div>
+            <button id="upgradeSkin">Buy crystal (300 coins)</button>
+        </div>
+    </div>
+
+    <div id="pauseIndicator" class="pause-indicator">
+        <span>PAUSED</span>
+    </div>
+
+    <!-- Hacker Panel (Left) -->
+    <div id="hackerPanel" class="hacker-panel">
+        <div class="coins" style="margin-bottom: 1rem;">
+            <span>Hacker Mode</span>
+        </div>
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Autoplay Aimbot</h3>
+            </div>
+            <p class="upgrade-description">Plays for you, speeds up gameplay, and highlights balls.</p>
+            <label class="toggle-row">
+                <input type="checkbox" id="toggleAimbot" />
+                <span>Enable</span>
+            </label>
+        </div>
+
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Line</h3>
+            </div>
+            <p class="upgrade-description">Draw a red trajectory line to where the ball will land on your side.</p>
+            <label class="toggle-row">
+                <input type="checkbox" id="toggleLine" />
+                <span>Enable</span>
+            </label>
+        </div>
+
+
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Time Hack</h3>
+            </div>
+            <p class="upgrade-description">Balls go fast toward the AI and slow down on your side.</p>
+            <label class="toggle-row">
+                <input type="checkbox" id="toggleTime" />
+                <span>Enable</span>
+            </label>
+        </div>
+
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>Another Paddle</h3>
+            </div>
+            <p class="upgrade-description">Control a second paddle for wider defense.</p>
+            <label class="toggle-row">
+                <input type="checkbox" id="toggleDual" />
+                <span>Enable</span>
+            </label>
+        </div>
+
+        <div class="upgrade-item">
+            <div class="upgrade-header">
+                <h3>God Mode</h3>
+            </div>
+            <p class="upgrade-description">AI vs AI at insane speed. Your paddle autoplays and also moves left/right for extra chaos.</p>
+            <label class="toggle-row">
+                <input type="checkbox" id="toggleGod" />
+                <span>Enable</span>
+            </label>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
